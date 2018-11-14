@@ -86,27 +86,29 @@ class PostList extends Component {
     console.log('login successfully')
     event.preventDefault()
   }
+  // 保存帖子
+  handleSave(post) {
+    //根据post的id，过滤出当前要更新的post
+    const posts = this.state.posts.map(
+      item => {
+        const newItem = item.id === post.id ? post : item;
+        return newItem
+      },
+    )
+    this.setState({
+      posts 
+    })
+  }
 
   render () {
     return (
       <div>
-        <div>
-          <form>
-            <label>
-              用户名:
-              <input type="text" name="name" value={this.state.name}  onChange={this.handleChange}/>
-            </label>
-            <label>
-              密码:
-              <input type="password" name="password" value={this.state.password} onChange={this.handleChange} />
-            </label>
-          </form>
-        </div>
-        帖子列表
+        <h2>帖子列表</h2>
         <ul>
-          {
-            this.state.posts.map(item => <PostItem key={item.id} post={item} onVote={this.handleVote} />)
-          }
+          {this.state.posts.map(
+            item => <PostItem
+            key={item.id} post={item} onVote={this.handleVote} onSave={this.handleSave} />
+          )}
         </ul>
       </div>
     )

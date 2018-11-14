@@ -10,28 +10,63 @@ class PostItem extends Component {
     this.state = {
       editing: false,  // 帖子是否处于编辑态
       post: props.post 
-    }
+    };
 
     this.handleVote = this.handleVote.bind(this)
+    this.handleEditPost = this.handleEditPost.bind(this)
+    this.handleTitleChange = this.handleTitleChange.bind(this)
   }
 
   // 这里应为构造函数、 方法、 访问器或属性
-  handleClick () {
-    let vote = this.state.vote
-    vote++
+shouldComponentUpdate (nextProps) {
+  // 父组件跟新post后，更新PostItem的state
+  if (this.props.post !== nextProps) {
     this.setState({
-      vote: vote
+      post: nextProps.post
     })
   }
+}
+  // 处理点赞事件
+  handleVote () {
+    this.props.onVote(this.props.post.id)
+  }
+  // 保存/编辑按钮点击后的逻辑
+  handleEditPost () {
+    const editing = this.state.deiting
+    if (editing) {
+      this.props.onSave({
+        ...this.state.post,
+        date: this.getFromatDate()
+      })
+    }
+    this.setState({
+      editing: !editing
+    })
+  }
+  // 处理标题textarea值的变化
+  handleTitleChange(event) {
+    const newPost = {
+      ...this.state.post, title:event.target.value
+    }
+    this.setState({
+      post: newPost
+    })
+  }
+
+  getFromatDate () {
+
+  }
   render () {
-    const {title, author, date} = this.props
-    let vote = this.state.vote
+    const {post} = this.state
     return (
-      <li> {/*这个是作为ul标签内的组件，所以最外层应使用li标签*/}
-        <div>{title}</div>
-        <div>创建人：<span>{author}</span></div>
-        <div>创建时间: <span>{date}</span></div>
-        <div><button onClick={this.handleClick}>点赞</button>&nbsp;<span>{vote}</span></div>
+      <li className="item"> 
+        <div className="title">{this.state.editing? <from><textarea value={post.title} onChange={this.handleTitleChange} /></from>: post.title}</div>
+        <div>创建人：<span>{post.author}</span></div>
+        <div>创建时间: <span>{post.date}</span></div>
+        <div className="like"><span><img src={like} alt="vote" onClick={this.handleVote} />></span><span>{post.vote}</span></div>
+        <div>
+          <button onClick={this.handleEditPost}>{this.state.editing? '保存': '编辑'}</button>
+        </div>
       </li>
     )
   }
